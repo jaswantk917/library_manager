@@ -26,7 +26,7 @@ class _ConfigurePageState extends State<ConfigurePage> {
           minVal: -100,
           isIntrinsicWidth: false,
           borderShape: BorderShapeBtn.circle,
-          boxDecoration: const BoxDecoration(color: Colors.amber),
+          boxDecoration: const BoxDecoration(),
           steps: 10,
           onQtyChanged: (val) {
             print(val);
