@@ -52,6 +52,35 @@ class _ConfigurePageState extends State<ConfigurePage> {
         const Padding(
           padding: EdgeInsets.all(8.0),
           child: Text(
+            'Info',
+            style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+          ),
+        ),
+        const Card(
+          child: Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Total Students: 400'),
+                Divider(),
+                Text('Total Students in morning shift: 100'),
+                Text('Total Students in noon shift: 100'),
+                Text('Total Students in evening shift: 100'),
+                Text('Total Students in night shift: 100'),
+                Text('Total Students in 24 hour: 100'),
+                Divider(),
+                Text('Seats remaining in morning shift: 100'),
+                Text('Seats remaining in noon shift: 100'),
+                Text('Seats remaining in evening shift: 100'),
+                Text('Seats remaining in night shift: 100'),
+              ],
+            ),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.all(8.0),
+          child: Text(
             'About me',
             style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
           ),
@@ -61,7 +90,7 @@ class _ConfigurePageState extends State<ConfigurePage> {
             padding: EdgeInsets.all(16.0),
             child: Text('My name is Jaswant Kumar'),
           ),
-        )
+        ),
       ],
     );
   }

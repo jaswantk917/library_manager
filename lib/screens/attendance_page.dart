@@ -8,8 +8,8 @@ class AttendanceList extends StatelessWidget {
     return const Padding(
       padding: EdgeInsets.all(8.0),
       child: Text(
-        'About me',
-        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
+        'Mark the students who are present:',
+        style: TextStyle(fontSize: 15, fontWeight: FontWeight.w400),
       ),
     );
   }
