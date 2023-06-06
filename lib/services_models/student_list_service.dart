@@ -14,7 +14,7 @@ class StudentsList extends ChangeNotifier {
 
   Future<void> loadStudents() async {
     final prefs = await SharedPreferences.getInstance();
-    students = decode(prefs.getString('students') ?? '[]');
+    students = decode(prefs.getString('student') ?? '[]');
     loading = false;
     notifyListeners();
     print(students);
@@ -24,8 +24,8 @@ class StudentsList extends ChangeNotifier {
     final prefs = await SharedPreferences.getInstance();
     //List<Student>? students = await loadStudents();
     students.add(student);
-    await prefs.setString('students', encode(students));
-    students = decode(prefs.getString('students') ?? '[]');
+    await prefs.setString('student', encode(students));
+    students = decode(prefs.getString('student') ?? '[]');
 
     notifyListeners();
   }

@@ -5,6 +5,7 @@ import 'package:library_management/screens/add_student.dart';
 import 'services_models/student_list_service.dart';
 import 'package:provider/provider.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'screens/attendance_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -63,7 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (currentPageIndex == 2) {
       return const ConfigurePage();
     }
-    return const ListTile();
+    return const AttendanceList();
   }
 
   @override
