@@ -21,6 +21,7 @@ dependencies:
   dynamic_color: ^1.6.5
   url_launcher: ^6.0.20
   font_awesome_flutter: ^10.4.0
+  flutter_riverpod: ^2.3.6
   input_quantity: ^1.1.6
 
   

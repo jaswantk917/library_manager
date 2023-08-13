@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:library_management/services_models/students.dart';
-import 'package:provider/provider.dart';
-import 'package:library_management/services_models/student_list_service.dart';
-import 'package:library_management/widgets_components/text_field_widget.dart';
+import 'package:library_management/models/student_model.dart';
+import 'package:library_management/repositories/student_list.dart';
+import 'package:library_management/src/common_functions.dart';
+import 'package:library_management/widgets_components/checkbox_formfield.dart';
 
 class FormPage extends StatelessWidget {
   const FormPage({Key? key}) : super(key: key);
@@ -22,23 +22,24 @@ class AddStudentForm extends StatefulWidget {
 }
 
 class _AddStudentFormState extends State<AddStudentForm> {
-  late StudentsList studentsList;
+  late List<StudentModel> studentsList;
+  late final StudentRepository studentRepository;
   DateTime selectedDate = DateTime.now();
   String studentName = '';
   String studentPhone = '';
-  TextEditingController dateInput = TextEditingController();
-  bool is24Hr = false;
-  bool morning = false;
-  bool noon = false;
-  bool evening = false;
-  bool night = false;
+  TextEditingController dateInput = TextEditingController(
+      text: DateFormat.yMMMd().format(DateTime.now()).toString());
+  bool morning = getCurrentSlot() == Slots.morning;
+  bool noon = getCurrentSlot() == Slots.noon;
+  bool evening = getCurrentSlot() == Slots.evening;
+  bool night = getCurrentSlot() == Slots.night;
 
   Future<void> _selectDate() async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: selectedDate,
       firstDate: DateTime(2022, 9),
-      lastDate: DateTime(2060),
+      lastDate: DateTime.now(),
     );
     if (picked != null && picked != selectedDate) {
       setState(() {
@@ -47,155 +48,181 @@ class _AddStudentFormState extends State<AddStudentForm> {
     }
   }
 
-  Future<void> addStudentToList() async {
-    await studentsList.addStudent(
-      Student(
-          name: studentName,
-          phone: studentPhone,
-          admissionDate: selectedDate,
-          is24Hr: is24Hr,
-          morning: morning,
-          noon: noon,
-          evening: evening,
-          night: night),
-    );
+  List<Slots> getSlots() {
+    List<Slots> list = [];
+    if (night) list.add(Slots.night);
+    if (noon) list.add(Slots.noon);
+    if (morning) list.add(Slots.morning);
+    if (evening) list.add(Slots.evening);
+    return list;
   }
 
   @override
+  void initState() {
+    studentRepository = StudentRepository();
+    super.initState();
+  }
+
+  final _formKey = GlobalKey<FormState>();
+  @override
   Widget build(BuildContext context) {
-    studentsList = Provider.of<StudentsList>(context);
     return Scaffold(
       body: SafeArea(
-        child: ListView(
-          children: <Widget>[
-            const SizedBox(
-              height: 40,
-            ),
-            TextFieldWidget(
-              callback: (value) {
-                studentName = value!;
-              },
-              labelText: 'Student Name',
-              textCapitalization: TextCapitalization.words,
-              textInputType: TextInputType.name,
-              icon: const Icon(Icons.person),
-            ),
-            TextFieldWidget(
-              callback: (value) {
-                studentPhone = value!;
-              },
-              labelText: 'Phone Number',
-              textCapitalization: TextCapitalization.words,
-              textInputType: TextInputType.phone,
-              icon: const Icon(Icons.phone),
-            ),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
-              child: TextField(
-                decoration: const InputDecoration(
-                  border: OutlineInputBorder(),
-                  labelText: 'Admission Date',
-                  icon: Icon(Icons.calendar_today),
-                ),
-                controller: dateInput,
-                readOnly: true,
-                onTap: () {
-                  setState(() {
-                    _selectDate();
-                    dateInput.text =
-                        DateFormat.yMMMd().format(selectedDate).toString();
-                  });
-                },
+        child: Form(
+          key: _formKey,
+          child: ListView(
+            children: <Widget>[
+              const SizedBox(
+                height: 16,
               ),
-            ),
-            ListTile(
-              title: const Text('24 hour'),
-              leading: Radio<bool>(
-                value: true,
-                groupValue: is24Hr,
-                onChanged: (bool? value) {
-                  setState(() {
-                    is24Hr = value!;
-                  });
-                },
-              ),
-            ),
-            ListTile(
-              title: const Text('Individual Slots'),
-              leading: Radio<bool>(
-                value: false,
-                groupValue: is24Hr,
-                onChanged: (bool? value) {
-                  setState(() {
-                    is24Hr = value!;
-                  });
-                },
-              ),
-            ),
-            is24Hr
-                ? const SizedBox(
-                    height: 1,
-                  )
-                : Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: CheckboxListTile(
-                          value: morning,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              morning = value!;
-                            });
-                          },
-                          title: const Text('Morning'),
-                          subtitle: const Text('6am to 11am'),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: CheckboxListTile(
-                          value: noon,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              noon = value!;
-                            });
-                          },
-                          title: const Text('Noon'),
-                          subtitle: const Text('11am to 4pm'),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: CheckboxListTile(
-                          value: evening,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              evening = value!;
-                            });
-                          },
-                          title: const Text('Evening'),
-                          subtitle: const Text('4pm to 9pm'),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                        child: CheckboxListTile(
-                          value: night,
-                          onChanged: (bool? value) {
-                            setState(() {
-                              night = value!;
-                            });
-                          },
-                          title: const Text('Night'),
-                          subtitle: const Text('10pm to 4am'),
-                        ),
-                      ),
-                    ],
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Student Name',
+                    icon: Icon(Icons.person),
                   ),
-            const SizedBox(
-              height: 50,
-            )
-          ],
+                  validator: (value) {
+                    if (value == '' || value == null) return 'Name is requried';
+                    return null;
+                  },
+                  textCapitalization: TextCapitalization.words,
+                  keyboardType: TextInputType.name,
+                  onChanged: (value) {
+                    studentName = value;
+                  },
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Phone Number',
+                    icon: Icon(Icons.phone),
+                  ),
+                  validator: (value) {
+                    if (value == null || value.isEmpty) {
+                      return 'Please enter a phone number';
+                    }
+                    if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                      return 'Please enter a valid 10-digit phone number';
+                    }
+                    return null;
+                  },
+                  keyboardType: TextInputType.phone,
+                  onChanged: (value) {
+                    studentPhone = value;
+                  },
+                ),
+              ),
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+                child: TextFormField(
+                  decoration: const InputDecoration(
+                    border: OutlineInputBorder(),
+                    labelText: 'Admission Date',
+                    icon: Icon(Icons.calendar_today),
+                  ),
+                  validator: (value) {
+                    if (dateInput.text.isEmpty) {
+                      return 'Select admission date';
+                    }
+                    return null;
+                  },
+                  controller: dateInput,
+                  readOnly: true,
+                  onTap: () {
+                    setState(() {
+                      _selectDate();
+                      dateInput.text =
+                          DateFormat.yMMMd().format(selectedDate).toString();
+                    });
+                  },
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: CheckboxListTileFormField(
+                  title: const Text('Morning'),
+                  validator: (value) {
+                    if (!(evening || night || noon || morning)) {
+                      return 'Select at least one slot';
+                    }
+                    return null;
+                  },
+                  onSaved: (bool? value) {
+                    setState(() {
+                      morning = value!;
+                    });
+                  },
+                  subtitle: const Text('6am to 11am'),
+                  initialValue: morning,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: CheckboxListTileFormField(
+                  title: const Text('Noon'),
+                  validator: (value) {
+                    if (!(evening || night || noon || morning)) {
+                      return 'Select at least one slot';
+                    }
+                    return null;
+                  },
+                  onSaved: (bool? value) {
+                    setState(() {
+                      noon = value!;
+                    });
+                  },
+                  subtitle: const Text('11am to 4pm'),
+                  initialValue: noon,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: CheckboxListTileFormField(
+                  title: const Text('Evening'),
+                  validator: (value) {
+                    if (!(evening || night || noon || morning)) {
+                      return 'Select at least one slot';
+                    }
+                    return null;
+                  },
+                  onSaved: (bool? value) {
+                    setState(() {
+                      evening = value!;
+                    });
+                  },
+                  subtitle: const Text('4pm to 9pm'),
+                  initialValue: evening,
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                child: CheckboxListTileFormField(
+                  title: const Text('Night'),
+                  validator: (value) {
+                    if (!(evening || night || noon || morning)) {
+                      return 'Select at least one slot';
+                    }
+                    return null;
+                  },
+                  onSaved: (bool? value) {
+                    setState(() {
+                      night = value!;
+                    });
+                  },
+                  subtitle: const Text('10pm to 4pm'),
+                  initialValue: night,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       appBar: AppBar(
@@ -205,11 +232,21 @@ class _AddStudentFormState extends State<AddStudentForm> {
       floatingActionButton: FloatingActionButton(
         child: const Icon(Icons.check),
         onPressed: () async {
-          Navigator.pop(context);
-          await addStudentToList();
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Added')),
-          );
+          if (_formKey.currentState!.validate()) {
+            await studentRepository.addStudent(StudentModel(
+              name: studentName,
+              phone: int.parse(studentPhone),
+              admissionDate: selectedDate,
+              lastPaymentDate: selectedDate,
+              slots: getSlots(),
+            ));
+            if (context.mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(content: Text('Added')),
+              );
+            }
+            if (context.mounted) Navigator.pop(context);
+          }
           // print(studentsList[0].phone);
         },
       ),
