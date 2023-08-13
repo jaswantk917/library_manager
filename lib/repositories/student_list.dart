@@ -35,6 +35,19 @@ class StudentRepository {
     studentList[index].lastPaymentDate = lastPaymentDate;
     prefs.setString('student', studentListToJson(studentList));
   }
+
+  Future<List<int>> getSeatData() async {
+    final prefs = await SharedPreferences.getInstance();
+    List<StudentModel> studentList =
+        studentListFromJson(prefs.getString('student') ?? '[]');
+    int seats = prefs.getInt('seats') ?? 100;
+    return [seats, studentList.length, 100, 100, 100, 100];
+  }
+
+  Future<void> setSeats(int seats) async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setInt('seats', seats);
+  }
   // Future<void> addStudent(StudentModel student) async {
   //   final prefs = await SharedPreferences.getInstance();
   //   //List<Student>? students = await loadStudents();

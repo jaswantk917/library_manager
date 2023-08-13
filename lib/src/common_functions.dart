@@ -8,7 +8,7 @@ Slots getCurrentSlot() {
       return Slots.noon;
     case >= 16 && <= 20:
       return Slots.evening;
-    case >= 21 && <= 3:
+    case >= 21 || <= 3:
       return Slots.night;
     default:
       return Slots.evening;

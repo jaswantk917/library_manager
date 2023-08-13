@@ -94,9 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
       body: mainPage(),
       floatingActionButton: (currentPageIndex == 0)
           ? FloatingActionButton(
-              onPressed: () {
-                print('tapped');
-                Navigator.push(
+              onPressed: () async {
+                await Navigator.push(
                   context,
                   MaterialPageRoute(
                     builder: (context) {

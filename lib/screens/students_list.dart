@@ -52,7 +52,6 @@ class _StudentListState extends State<StudentList> {
                     subtitle: Text(
                         'Last paid on ${DateFormat.yMMMd().format(student.admissionDate)}'),
                     onTap: () {
-                      print('tapped');
                       Navigator.push(
                         context,
                         MaterialPageRoute(
