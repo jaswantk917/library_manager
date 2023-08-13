@@ -19,6 +19,22 @@ class StudentRepository {
     print(studentListToJson(studentList));
     prefs.setString('student', studentListToJson(studentList));
   }
+
+  Future<StudentModel> fetchStudentByIndex(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+
+    StudentModel student =
+        studentListFromJson(prefs.getString('student') ?? '[]')[index];
+    return student;
+  }
+
+  Future<void> paidOnDate(int index, DateTime lastPaymentDate) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<StudentModel> studentList =
+        studentListFromJson(prefs.getString('student') ?? '[]');
+    studentList[index].lastPaymentDate = lastPaymentDate;
+    prefs.setString('student', studentListToJson(studentList));
+  }
   // Future<void> addStudent(StudentModel student) async {
   //   final prefs = await SharedPreferences.getInstance();
   //   //List<Student>? students = await loadStudents();

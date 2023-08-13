@@ -51,7 +51,7 @@ class StudentModel {
   final int phone;
   final DateTime admissionDate;
   final List<Slots> slots;
-  final DateTime lastPaymentDate;
+  DateTime lastPaymentDate;
 
   StudentModel({
     required this.name,

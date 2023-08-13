@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/student_list.dart';
+import 'package:library_management/screens/student_profile.dart';
 
 class StudentList extends StatefulWidget {
   const StudentList({Key? key}) : super(key: key);
@@ -13,6 +14,7 @@ class StudentList extends StatefulWidget {
 class _StudentListState extends State<StudentList> {
   List<StudentModel> studentsList = [];
   late Future<List<StudentModel>> future;
+
   @override
   void initState() {
     future = StudentRepository().fetchStudentList();
@@ -51,12 +53,12 @@ class _StudentListState extends State<StudentList> {
                         'Last paid on ${DateFormat.yMMMd().format(student.admissionDate)}'),
                     onTap: () {
                       print('tapped');
-                      // Navigator.push(
-                      //   context,
-                      //   MaterialPageRoute(
-                      //     builder: (context) => StudentProfile(index: index),
-                      //   ),
-                      // );
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => StudentProfile(index: index),
+                        ),
+                      );
                     },
                     trailing: const Icon(Icons.arrow_forward_sharp),
                   ),
