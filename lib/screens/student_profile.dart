@@ -1,7 +1,10 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/student_list.dart';
+import 'package:library_management/screens/edit_profile.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
@@ -33,13 +36,42 @@ class _StudentProfileState extends State<StudentProfile> {
         actions: <Widget>[
           PopupMenuButton(
             itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'SampleItem.itemOne',
-                child: Text('Edit'),
+                child: const Text('Edit'),
+                onTap: () {
+                  print('Tapped');
+                  Navigator.of(context).push(
+                    MaterialPageRoute(
+                      builder: (context) {
+                        return EditStudentForm(index: widget.index);
+                      },
+                    ),
+                  );
+                },
               ),
-              const PopupMenuItem<String>(
+              PopupMenuItem<String>(
                 value: 'SampleItem.itemTw',
-                child: Text('Delete'),
+                child: const Text('Delete'),
+                onTap: () {
+                  bool undo = true;
+                  Navigator.of(context).pop();
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: const Text("Deleted student"),
+                      action: SnackBarAction(
+                        label: 'Undo',
+                        onPressed: () {
+                          undo = false;
+                        },
+                      ),
+                      duration: const Duration(seconds: 3),
+                    ),
+                  );
+                  Timer(const Duration(seconds: 4), () async {
+                    if (undo) await rep.deleteStudentByIndex(widget.index);
+                  });
+                },
               ),
             ],
           ),

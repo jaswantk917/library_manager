@@ -4,27 +4,20 @@ import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/student_list.dart';
 import 'package:library_management/src/common_functions.dart';
 
-class FormPage extends StatelessWidget {
-  const FormPage({Key? key}) : super(key: key);
-
+class EditStudentForm extends StatefulWidget {
+  const EditStudentForm({Key? key, required this.index}) : super(key: key);
+  final int index;
   @override
-  Widget build(BuildContext context) {
-    return const AddStudentForm();
-  }
+  State<EditStudentForm> createState() => _EditStudentFormState();
 }
 
-class AddStudentForm extends StatefulWidget {
-  const AddStudentForm({Key? key}) : super(key: key);
-
-  @override
-  State<AddStudentForm> createState() => _AddStudentFormState();
-}
-
-class _AddStudentFormState extends State<AddStudentForm> {
+class _EditStudentFormState extends State<EditStudentForm> {
   late List<StudentModel> studentsList;
-  late final StudentRepository studentRepository;
+  final StudentRepository studentRepository = StudentRepository();
+
   DateTime selectedDate = DateTime.now();
-  String studentName = '';
+  late StudentModel student;
+  String studentName = 'student.name';
   String studentPhone = '';
   TextEditingController dateInput = TextEditingController(
       text: DateFormat.yMMMd().format(DateTime.now()).toString());
@@ -56,9 +49,13 @@ class _AddStudentFormState extends State<AddStudentForm> {
     return list;
   }
 
+  fetchStudent() async {
+    student = await studentRepository.fetchStudentByIndex(widget.index);
+  }
+
   @override
   void initState() {
-    studentRepository = StudentRepository();
+    fetchStudent();
     super.initState();
   }
 

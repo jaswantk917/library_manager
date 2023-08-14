@@ -88,12 +88,16 @@ class _ConfigurePageState extends State<ConfigurePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Total Students: ${data[1]}'),
-                      const Divider(),
+                      Divider(
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
                       Text('Total Students in morning shift: ${data[2]}'),
                       Text('Total Students in noon shift: ${data[3]}'),
                       Text('Total Students in evening shift: ${data[4]}'),
                       Text('Total Students in night shift: ${data[5]}'),
-                      const Divider(),
+                      Divider(
+                        color: Theme.of(context).colorScheme.onBackground,
+                      ),
                       const Text('Seats remaining in morning shift: 100'),
                       const Text('Seats remaining in noon shift: 100'),
                       const Text('Seats remaining in evening shift: 100'),

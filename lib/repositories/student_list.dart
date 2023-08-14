@@ -16,7 +16,7 @@ class StudentRepository {
     List<StudentModel> studentList =
         studentListFromJson(prefs.getString('student') ?? '[]');
     studentList.add(student);
-    print(studentListToJson(studentList));
+
     prefs.setString('student', studentListToJson(studentList));
   }
 
@@ -41,12 +41,28 @@ class StudentRepository {
     List<StudentModel> studentList =
         studentListFromJson(prefs.getString('student') ?? '[]');
     int seats = prefs.getInt('seats') ?? 100;
-    return [seats, studentList.length, 100, 100, 100, 100];
+    int morning = 0, noon = 0, evening = 0, night = 0;
+    for (var student in studentList) {
+      if (student.slots.contains(Slots.morning)) morning++;
+      if (student.slots.contains(Slots.noon)) noon++;
+      if (student.slots.contains(Slots.evening)) evening++;
+      if (student.slots.contains(Slots.night)) night++;
+    }
+    return [seats, studentList.length, morning, noon, evening, night];
   }
 
   Future<void> setSeats(int seats) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setInt('seats', seats);
+  }
+
+  Future<void> deleteStudentByIndex(int index) async {
+    final prefs = await SharedPreferences.getInstance();
+    List<StudentModel> studentList =
+        studentListFromJson(prefs.getString('student') ?? '[]');
+    studentList.removeAt(index);
+
+    prefs.setString('student', studentListToJson(studentList));
   }
   // Future<void> addStudent(StudentModel student) async {
   //   final prefs = await SharedPreferences.getInstance();
