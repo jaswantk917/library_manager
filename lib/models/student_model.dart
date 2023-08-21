@@ -11,9 +11,9 @@ enum Slots {
   night,
 }
 
-List<StudentModel> studentListFromJson(String str) => List<StudentModel>.from(
-    json.decode(str).map((x) => StudentModel.fromJson(x)));
-String studentListToJson(List<StudentModel> data) =>
+List<Student> studentListFromJson(String str) =>
+    List<Student>.from(json.decode(str).map((x) => Student.fromJson(x)));
+String studentListToJson(List<Student> data) =>
     json.encode(List<dynamic>.from(data.map((x) => x.toJson())));
 
 Slots getSlot(String s) {
@@ -46,32 +46,34 @@ String getSlotString(Slots s) {
   }
 }
 
-class StudentModel {
+class Student {
   final String name;
   final int phone;
   final DateTime admissionDate;
   final List<Slots> slots;
   DateTime lastPaymentDate;
+  final String id;
 
-  StudentModel({
+  Student({
     required this.name,
     required this.phone,
     required this.admissionDate,
     required this.slots,
     required this.lastPaymentDate,
+    required this.id,
   });
 
-  factory StudentModel.fromRawJson(String str) =>
-      StudentModel.fromJson(json.decode(str));
+  factory Student.fromRawJson(String str) => Student.fromJson(json.decode(str));
 
   String toRawJson() => json.encode(toJson());
 
-  factory StudentModel.fromJson(Map<String, dynamic> json) => StudentModel(
+  factory Student.fromJson(Map<String, dynamic> json) => Student(
         name: json["name"],
         phone: json["phone"],
         admissionDate: DateTime.parse(json["admission_date"]),
         slots: List<Slots>.from(json["slots"].map((x) => getSlot(x))),
         lastPaymentDate: DateTime.parse(json["last_payment_date"]),
+        id: json["id"],
       );
 
   Map<String, dynamic> toJson() => {
@@ -80,5 +82,6 @@ class StudentModel {
         "admission_date": admissionDate.toIso8601String(),
         "slots": List<dynamic>.from(slots.map((x) => getSlotString(x))),
         "last_payment_date": lastPaymentDate.toIso8601String(),
+        "id": id,
       };
 }

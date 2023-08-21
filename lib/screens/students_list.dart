@@ -12,8 +12,8 @@ class StudentList extends StatefulWidget {
 }
 
 class _StudentListState extends State<StudentList> {
-  List<StudentModel> studentsList = [];
-  late Future<List<StudentModel>> future;
+  List<Student> studentsList = [];
+  late Future<List<Student>> future;
 
   @override
   void initState() {
@@ -55,7 +55,7 @@ class _StudentListState extends State<StudentList> {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => StudentProfile(index: index),
+                          builder: (context) => StudentProfile(id: student.id),
                         ),
                       );
                     },

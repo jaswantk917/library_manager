@@ -5,12 +5,13 @@ import 'package:intl/intl.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/student_list.dart';
 import 'package:library_management/screens/edit_profile.dart';
+import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class StudentProfile extends StatefulWidget {
-  const StudentProfile({super.key, required this.index});
-  final int index;
+  const StudentProfile({super.key, required this.id});
+  final String id;
 
   @override
   State<StudentProfile> createState() => _StudentProfileState();
@@ -18,13 +19,13 @@ class StudentProfile extends StatefulWidget {
 
 class _StudentProfileState extends State<StudentProfile> {
   StudentRepository rep = StudentRepository();
-  late Future<StudentModel> future;
+  late Future<Student> future;
   bool loading = false;
 
   @override
   void initState() {
     super.initState();
-    future = rep.fetchStudentByIndex(widget.index);
+    future = rep.fetchStudentById(widget.id);
   }
 
   @override
@@ -44,7 +45,7 @@ class _StudentProfileState extends State<StudentProfile> {
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) {
-                        return EditStudentForm(index: widget.index);
+                        return EditStudentForm(id: widget.id);
                       },
                     ),
                   );
@@ -69,7 +70,7 @@ class _StudentProfileState extends State<StudentProfile> {
                     ),
                   );
                   Timer(const Duration(seconds: 4), () async {
-                    if (undo) await rep.deleteStudentByIndex(widget.index);
+                    if (undo) await rep.deleteStudentById(widget.id);
                   });
                 },
               ),
@@ -90,16 +91,27 @@ class _StudentProfileState extends State<StudentProfile> {
                 child: Text('Something went wrong'),
               );
             } else {
-              StudentModel student = snapshot.data!;
+              Student student = snapshot.data!;
               return RefreshIndicator.adaptive(
                 onRefresh: () async {
                   setState(() {
-                    future = rep.fetchStudentByIndex(widget.index);
+                    future = rep.fetchStudentById(widget.id);
                   });
                 },
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   children: [
+                    Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: CircleAvatar(
+                        radius: 100,
+                        child: QrImageView(
+                          data: widget.id,
+                          version: QrVersions.auto,
+                          size: 150,
+                        ),
+                      ),
+                    ),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Card(
@@ -138,7 +150,7 @@ class _StudentProfileState extends State<StudentProfile> {
                                   icon: const FaIcon(FontAwesomeIcons.whatsapp),
                                   onPressed: () async {
                                     var whatsappUrl =
-                                        "whatsapp://send?phone=+91${student.phone.toString()}&text=Hi";
+                                        "whatsapp://send?phone=+91${student.phone.toString()}&text=Hello ${student.name}!";
                                     try {
                                       launchUrl(
                                         Uri.parse(whatsappUrl),
@@ -146,8 +158,13 @@ class _StudentProfileState extends State<StudentProfile> {
                                     } catch (e) {
                                       //To handle error and display error message
                                       ScaffoldMessenger.of(context)
-                                          .showSnackBar(SnackBar(
-                                              content: Text(e.toString())));
+                                          .showSnackBar(
+                                        SnackBar(
+                                          content: Text(
+                                            e.toString(),
+                                          ),
+                                        ),
+                                      );
                                     }
                                   },
                                 ),
@@ -239,11 +256,11 @@ class _StudentProfileState extends State<StudentProfile> {
                               lastDate: DateTime.now(),
                             );
                             if (paymentDate != null) {
-                              await rep.paidOnDate(widget.index, paymentDate);
+                              await rep.paidOnDate(widget.id, paymentDate);
                             }
                             setState(() {
                               loading = false;
-                              future = rep.fetchStudentByIndex(widget.index);
+                              future = rep.fetchStudentById(widget.id);
                             });
                           },
                           clipBehavior: Clip.antiAliasWithSaveLayer,

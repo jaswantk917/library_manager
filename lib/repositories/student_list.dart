@@ -2,43 +2,48 @@ import 'package:library_management/models/student_model.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class StudentRepository {
-  Future<List<StudentModel>> fetchStudentList() async {
+  Future<List<Student>> fetchStudentList() async {
     final prefs = await SharedPreferences.getInstance();
     print(prefs.getString('student') ?? '[]');
-    List<StudentModel> studentList =
+    List<Student> studentList =
         studentListFromJson(prefs.getString('student') ?? '[]');
 
     return studentList;
   }
 
-  Future<void> addStudent(StudentModel student) async {
+  Future<void> addStudent(Student student) async {
     final prefs = await SharedPreferences.getInstance();
-    List<StudentModel> studentList =
+
+    List<Student> studentList =
         studentListFromJson(prefs.getString('student') ?? '[]');
     studentList.add(student);
 
     prefs.setString('student', studentListToJson(studentList));
   }
 
-  Future<StudentModel> fetchStudentByIndex(int index) async {
+  Future<Student> fetchStudentById(String id) async {
     final prefs = await SharedPreferences.getInstance();
 
-    StudentModel student =
-        studentListFromJson(prefs.getString('student') ?? '[]')[index];
+    Student student = studentListFromJson(prefs.getString('student') ?? '[]')
+        .firstWhere((element) => element.id == id);
+
     return student;
   }
 
-  Future<void> paidOnDate(int index, DateTime lastPaymentDate) async {
+  Future<void> paidOnDate(String id, DateTime lastPaymentDate) async {
     final prefs = await SharedPreferences.getInstance();
-    List<StudentModel> studentList =
+    List<Student> studentList =
         studentListFromJson(prefs.getString('student') ?? '[]');
-    studentList[index].lastPaymentDate = lastPaymentDate;
+
+    studentList.firstWhere((element) => element.id == id).lastPaymentDate =
+        lastPaymentDate;
+
     prefs.setString('student', studentListToJson(studentList));
   }
 
   Future<List<int>> getSeatData() async {
     final prefs = await SharedPreferences.getInstance();
-    List<StudentModel> studentList =
+    List<Student> studentList =
         studentListFromJson(prefs.getString('student') ?? '[]');
     int seats = prefs.getInt('seats') ?? 100;
     int morning = 0, noon = 0, evening = 0, night = 0;
@@ -56,11 +61,11 @@ class StudentRepository {
     prefs.setInt('seats', seats);
   }
 
-  Future<void> deleteStudentByIndex(int index) async {
+  Future<void> deleteStudentById(String id) async {
     final prefs = await SharedPreferences.getInstance();
-    List<StudentModel> studentList =
+    List<Student> studentList =
         studentListFromJson(prefs.getString('student') ?? '[]');
-    studentList.removeAt(index);
+    studentList.removeWhere((element) => element.id == id);
 
     prefs.setString('student', studentListToJson(studentList));
   }

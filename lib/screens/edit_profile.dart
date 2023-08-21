@@ -3,20 +3,21 @@ import 'package:intl/intl.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/student_list.dart';
 import 'package:library_management/src/common_functions.dart';
+import 'package:uuid/uuid.dart';
 
 class EditStudentForm extends StatefulWidget {
-  const EditStudentForm({Key? key, required this.index}) : super(key: key);
-  final int index;
+  const EditStudentForm({Key? key, required this.id}) : super(key: key);
+  final String id;
   @override
   State<EditStudentForm> createState() => _EditStudentFormState();
 }
 
 class _EditStudentFormState extends State<EditStudentForm> {
-  late List<StudentModel> studentsList;
+  late List<Student> studentsList;
   final StudentRepository studentRepository = StudentRepository();
 
   DateTime selectedDate = DateTime.now();
-  late StudentModel student;
+  late Student student;
   String studentName = 'student.name';
   String studentPhone = '';
   TextEditingController dateInput = TextEditingController(
@@ -50,7 +51,7 @@ class _EditStudentFormState extends State<EditStudentForm> {
   }
 
   fetchStudent() async {
-    student = await studentRepository.fetchStudentByIndex(widget.index);
+    student = await studentRepository.fetchStudentById(widget.id);
   }
 
   @override
@@ -239,12 +240,13 @@ class _EditStudentFormState extends State<EditStudentForm> {
         onPressed: (noon || evening || night || morning)
             ? () async {
                 if (_formKey.currentState!.validate()) {
-                  await studentRepository.addStudent(StudentModel(
+                  await studentRepository.addStudent(Student(
                     name: studentName,
                     phone: int.parse(studentPhone),
                     admissionDate: selectedDate,
                     lastPaymentDate: selectedDate,
                     slots: getSlots(),
+                    id: const Uuid().v1(),
                   ));
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(

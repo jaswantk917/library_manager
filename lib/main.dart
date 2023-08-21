@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:library_management/screens/add_student.dart';
 import 'package:library_management/screens/configure_page.dart';
+import 'package:library_management/screens/fab_widget.dart';
 import 'package:library_management/screens/students_list.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -94,6 +95,7 @@ class _MyHomePageState extends State<MyHomePage> {
       body: mainPage(),
       floatingActionButton: (currentPageIndex == 0)
           ? FloatingActionButton(
+              // heroTag: 'addstud',
               onPressed: () async {
                 await Navigator.push(
                   context,
@@ -107,7 +109,9 @@ class _MyHomePageState extends State<MyHomePage> {
               tooltip: 'Add a new student',
               child: const Icon(Icons.add),
             )
-          : null,
+          : (currentPageIndex == 1)
+              ? const QRFAB()
+              : null,
       bottomNavigationBar: NavigationBar(
         labelBehavior: NavigationDestinationLabelBehavior.onlyShowSelected,
         onDestinationSelected: (int index) {

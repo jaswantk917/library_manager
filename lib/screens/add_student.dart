@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/student_list.dart';
+import 'package:library_management/screens/qr_show_page.dart';
 import 'package:library_management/src/common_functions.dart';
+import 'package:uuid/uuid.dart';
 
 class FormPage extends StatelessWidget {
   const FormPage({Key? key}) : super(key: key);
@@ -21,7 +23,7 @@ class AddStudentForm extends StatefulWidget {
 }
 
 class _AddStudentFormState extends State<AddStudentForm> {
-  late List<StudentModel> studentsList;
+  late List<Student> studentsList;
   late final StudentRepository studentRepository;
   DateTime selectedDate = DateTime.now();
   String studentName = '';
@@ -66,171 +68,173 @@ class _AddStudentFormState extends State<AddStudentForm> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Form(
-          key: _formKey,
-          child: ListView(
-            children: <Widget>[
-              const SizedBox(
-                height: 16,
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Student Name',
-                    icon: Icon(Icons.person),
-                  ),
-                  validator: (value) {
-                    if (value == '' || value == null) return 'Name is requried';
-                    return null;
-                  },
-                  textCapitalization: TextCapitalization.words,
-                  keyboardType: TextInputType.name,
-                  onChanged: (value) {
-                    studentName = value;
-                  },
+      body: Hero(
+        tag: 'addstud',
+        child: SafeArea(
+          child: Form(
+            key: _formKey,
+            child: ListView(
+              children: <Widget>[
+                const SizedBox(
+                  height: 16,
                 ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Phone Number',
-                    icon: Icon(Icons.phone),
-                  ),
-                  validator: (value) {
-                    if (value == null || value.isEmpty) {
-                      return 'Please enter a phone number';
-                    }
-                    if (!RegExp(r'^\d{10}$').hasMatch(value)) {
-                      return 'Please enter a valid 10-digit phone number';
-                    }
-                    return null;
-                  },
-                  keyboardType: TextInputType.phone,
-                  onChanged: (value) {
-                    studentPhone = value;
-                  },
-                ),
-              ),
-              Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
-                child: TextFormField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    labelText: 'Admission Date',
-                    icon: Icon(Icons.calendar_today),
-                  ),
-                  validator: (value) {
-                    if (dateInput.text.isEmpty) {
-                      return 'Select admission date';
-                    }
-                    return null;
-                  },
-                  controller: dateInput,
-                  readOnly: true,
-                  onTap: () {
-                    setState(() {
-                      _selectDate();
-                      dateInput.text =
-                          DateFormat.yMMMd().format(selectedDate).toString();
-                    });
-                  },
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ListTile(
-                  onTap: () {
-                    setState(() {
-                      morning = !morning;
-                    });
-                  },
-                  title: const Text('Morning'),
-                  leading: Checkbox(
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Student Name',
+                      icon: Icon(Icons.person),
+                    ),
+                    validator: (value) {
+                      if (value == '' || value == null)
+                        return 'Name is requried';
+                      return null;
+                    },
+                    textCapitalization: TextCapitalization.words,
+                    keyboardType: TextInputType.name,
                     onChanged: (value) {
+                      studentName = value;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Phone Number',
+                      icon: Icon(Icons.phone),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter a phone number';
+                      }
+                      if (!RegExp(r'^\d{10}$').hasMatch(value)) {
+                        return 'Please enter a valid 10-digit phone number';
+                      }
+                      return null;
+                    },
+                    keyboardType: TextInputType.phone,
+                    onChanged: (value) {
+                      studentPhone = value;
+                    },
+                  ),
+                ),
+                Padding(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 32, vertical: 10),
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      labelText: 'Admission Date',
+                      icon: Icon(Icons.calendar_today),
+                    ),
+                    validator: (value) {
+                      if (dateInput.text.isEmpty) {
+                        return 'Select admission date';
+                      }
+                      return null;
+                    },
+                    controller: dateInput,
+                    readOnly: true,
+                    onTap: () {
                       setState(() {
-                        morning = value!;
-                        print('morning $value');
+                        _selectDate();
+                        dateInput.text =
+                            DateFormat.yMMMd().format(selectedDate).toString();
                       });
                     },
-                    value: morning,
                   ),
-                  subtitle: const Text('6am to 11am'),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ListTile(
-                  onTap: () {
-                    setState(
-                      () {
-                        noon = !noon;
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: ListTile(
+                    onTap: () {
+                      setState(() {
+                        morning = !morning;
+                      });
+                    },
+                    title: const Text('Morning'),
+                    leading: Checkbox(
+                      onChanged: (value) {
+                        setState(() {
+                          morning = value!;
+                        });
                       },
-                    );
-                  },
-                  title: const Text('Noon'),
-                  leading: Checkbox(
-                    onChanged: (value) {
+                      value: morning,
+                    ),
+                    subtitle: const Text('6am to 11am'),
+                  ),
+                ),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: ListTile(
+                    onTap: () {
                       setState(
                         () {
-                          noon = value!;
+                          noon = !noon;
                         },
                       );
                     },
-                    value: noon,
+                    title: const Text('Noon'),
+                    leading: Checkbox(
+                      onChanged: (value) {
+                        setState(
+                          () {
+                            noon = value!;
+                          },
+                        );
+                      },
+                      value: noon,
+                    ),
+                    subtitle: const Text('11am to 4pm'),
                   ),
-                  subtitle: const Text('11am to 4pm'),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ListTile(
-                  onTap: () {
-                    setState(() {
-                      evening = !evening;
-                    });
-                  },
-                  title: const Text('Evening'),
-                  leading: Checkbox(
-                    onChanged: (value) {
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: ListTile(
+                    onTap: () {
                       setState(() {
-                        evening = value!;
+                        evening = !evening;
                       });
                     },
-                    value: evening,
+                    title: const Text('Evening'),
+                    leading: Checkbox(
+                      onChanged: (value) {
+                        setState(() {
+                          evening = value!;
+                        });
+                      },
+                      value: evening,
+                    ),
+                    subtitle: const Text('4pm to 9pm'),
                   ),
-                  subtitle: const Text('4pm to 9pm'),
                 ),
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                child: ListTile(
-                  title: const Text('Night'),
-                  onTap: () {
-                    setState(() {
-                      night = !night;
-                    });
-                  },
-                  leading: Checkbox(
-                    onChanged: (value) {
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: ListTile(
+                    title: const Text('Night'),
+                    onTap: () {
                       setState(() {
-                        night = value!;
-                        print('night $night');
+                        night = !night;
                       });
                     },
-                    value: night,
+                    leading: Checkbox(
+                      onChanged: (value) {
+                        setState(() {
+                          night = value!;
+                        });
+                      },
+                      value: night,
+                    ),
+                    subtitle: const Text('10pm to 4pm'),
                   ),
-                  subtitle: const Text('10pm to 4pm'),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
@@ -242,19 +246,28 @@ class _AddStudentFormState extends State<AddStudentForm> {
         onPressed: (noon || evening || night || morning)
             ? () async {
                 if (_formKey.currentState!.validate()) {
-                  await studentRepository.addStudent(StudentModel(
-                    name: studentName,
-                    phone: int.parse(studentPhone),
-                    admissionDate: selectedDate,
-                    lastPaymentDate: selectedDate,
-                    slots: getSlots(),
-                  ));
+                  final String id = const Uuid().v1();
+                  await studentRepository.addStudent(
+                    Student(
+                      name: studentName,
+                      phone: int.parse(studentPhone),
+                      admissionDate: selectedDate,
+                      lastPaymentDate: selectedDate,
+                      slots: getSlots(),
+                      id: id,
+                    ),
+                  );
                   if (context.mounted) {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(content: Text('Added')),
                     );
                   }
-                  if (context.mounted) Navigator.pop(context);
+
+                  if (context.mounted) {
+                    Navigator.of(context).push(MaterialPageRoute(
+                        builder: (context) =>
+                            QRShowScreen(title: studentName, data: id)));
+                  }
                 }
               }
             : () {
