@@ -1,9 +1,18 @@
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:library_management/blocs/auth/auth_bloc.dart';
+import 'package:library_management/blocs/signin/signin_cubit.dart';
+import 'package:library_management/repositories/auth_repository.dart';
 import 'package:library_management/screens/add_student.dart';
 import 'package:library_management/screens/configure_page.dart';
 import 'package:library_management/screens/fab_widget.dart';
 import 'package:library_management/screens/students_list.dart';
 import 'package:dynamic_color/dynamic_color.dart';
+import 'package:library_management/screens/waiting_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/attendance_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -31,19 +40,43 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
       builder: ((lightDynamic, darkDynamic) {
-        return MaterialApp(
-          debugShowCheckedModeBanner: false,
-          title: 'Flutter Demo',
-          theme: ThemeData(
-            colorScheme: lightDynamic ?? _defaultLightColorScheme,
-            useMaterial3: true,
+        return MultiRepositoryProvider(
+          providers: [
+            RepositoryProvider<AuthRepository>(
+              create: (context) => AuthRepository(
+                firebaseFirestore: FirebaseFirestore.instance,
+                firebaseAuth: FirebaseAuth.instance,
+              ),
+            ),
+          ],
+          child: MultiBlocProvider(
+            providers: [
+              BlocProvider<AuthBloc>(
+                create: (BuildContext context) => AuthBloc(
+                  authRepository: context.read<AuthRepository>(),
+                ),
+              ),
+              BlocProvider<SigninCubit>(
+                create: (context) => SigninCubit(
+                  authRepository: context.read<AuthRepository>(),
+                ),
+              ),
+            ],
+            child: MaterialApp(
+              debugShowCheckedModeBanner: false,
+              title: 'Flutter Demo',
+              theme: ThemeData(
+                colorScheme: lightDynamic ?? _defaultLightColorScheme,
+                useMaterial3: true,
+              ),
+              darkTheme: ThemeData(
+                colorScheme: darkDynamic ?? _defaultDarkColorScheme,
+                useMaterial3: true,
+              ),
+              themeMode: ThemeMode.system,
+              home: const LandingPage(),
+            ),
           ),
-          darkTheme: ThemeData(
-            colorScheme: darkDynamic ?? _defaultDarkColorScheme,
-            useMaterial3: true,
-          ),
-          themeMode: ThemeMode.system,
-          home: const MyHomePage(title: 'Library by Jas'),
         );
       }),
     );
@@ -86,6 +119,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   value: 'SampleItem.itemOne',
                   child: const Text('Delete data'),
                   onTap: () async {
+                    context.read<AuthBloc>().add(SignoutRequestedEvent());
                     final prefs = await SharedPreferences.getInstance();
                     prefs.clear();
                   },

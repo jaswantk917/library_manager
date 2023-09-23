@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/student_list.dart';
-import 'package:library_management/src/common_functions.dart';
+import 'package:library_management/utils/common_functions.dart';
 import 'package:uuid/uuid.dart';
 
 class EditStudentForm extends StatefulWidget {

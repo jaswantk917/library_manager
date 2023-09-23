@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/attendance_today.dart';
 import 'package:library_management/repositories/student_list.dart';
-import 'package:library_management/src/common_functions.dart';
+import 'package:library_management/utils/common_functions.dart';
 
 class AttendanceList extends StatefulWidget {
   const AttendanceList({super.key});
