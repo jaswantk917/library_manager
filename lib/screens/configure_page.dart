@@ -98,10 +98,14 @@ class _ConfigurePageState extends State<ConfigurePage> {
                       Divider(
                         color: Theme.of(context).colorScheme.onBackground,
                       ),
-                      const Text('Seats remaining in morning shift: 100'),
-                      const Text('Seats remaining in noon shift: 100'),
-                      const Text('Seats remaining in evening shift: 100'),
-                      const Text('Seats remaining in night shift: 100'),
+                      Text(
+                          'Seats remaining in morning shift: ${data[0] - data[2]}'),
+                      Text(
+                          'Seats remaining in noon shift: ${data[0] - data[3]}'),
+                      Text(
+                          'Seats remaining in evening shift: ${data[0] - data[4]}'),
+                      Text(
+                          'Seats remaining in night shift: ${data[0] - data[5]}'),
                     ],
                   ),
                 ),

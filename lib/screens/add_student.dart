@@ -88,8 +88,9 @@ class _AddStudentFormState extends State<AddStudentForm> {
                       icon: Icon(Icons.person),
                     ),
                     validator: (value) {
-                      if (value == '' || value == null)
+                      if (value == '' || value == null) {
                         return 'Name is requried';
+                      }
                       return null;
                     },
                     textCapitalization: TextCapitalization.words,

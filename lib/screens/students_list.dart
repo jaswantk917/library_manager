@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:library_management/common_widgets.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/student_list.dart';
 import 'package:library_management/screens/student_profile.dart';
@@ -40,30 +41,37 @@ class _StudentListState extends State<StudentList> {
                 future = StudentRepository().fetchStudentList();
               });
             },
-            child: ListView.builder(
-              physics: const AlwaysScrollableScrollPhysics(),
-              itemCount: studentsList.length,
-              itemBuilder: (BuildContext context, int index) {
-                final student = studentsList[index];
-                return Card(
-                  child: ListTile(
-                    leading: const Icon(Icons.person),
-                    title: Text(student.name),
-                    subtitle: Text(
-                        'Last paid on ${DateFormat.yMMMd().format(student.admissionDate)}'),
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => StudentProfile(id: student.id),
+            child: studentsList.isEmpty
+                ? const Center(child: EmptyListWidget())
+                : ListView.builder(
+                    physics: const AlwaysScrollableScrollPhysics(),
+                    itemCount: studentsList.length,
+                    itemBuilder: (BuildContext context, int index) {
+                      final student = studentsList[index];
+
+                      return Card(
+                        child: ListTile(
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(12))),
+                          leading: const Icon(Icons.person),
+                          title: Text(student.name),
+                          subtitle: Text(
+                              'Last paid on ${DateFormat.yMMMd().format(student.admissionDate)}'),
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    StudentProfile(id: student.id),
+                              ),
+                            );
+                          },
+                          trailing: const Icon(Icons.arrow_forward_sharp),
                         ),
                       );
                     },
-                    trailing: const Icon(Icons.arrow_forward_sharp),
                   ),
-                );
-              },
-            ),
           );
         }
       },

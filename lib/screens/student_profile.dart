@@ -21,6 +21,7 @@ class _StudentProfileState extends State<StudentProfile> {
   StudentRepository rep = StudentRepository();
   late Future<Student> future;
   bool loading = false;
+  String? name;
 
   @override
   void initState() {
@@ -32,7 +33,7 @@ class _StudentProfileState extends State<StudentProfile> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Jaswant Kumar'),
+        title: Text(name ?? 'Student'),
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         actions: <Widget>[
           PopupMenuButton(
@@ -92,6 +93,8 @@ class _StudentProfileState extends State<StudentProfile> {
               );
             } else {
               Student student = snapshot.data!;
+              name = student.name;
+              // setState(() {});
               return RefreshIndicator.adaptive(
                 onRefresh: () async {
                   setState(() {
