@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "89249602339",
+    "project_id": "flutter-library-management-jas",
+    "storage_bucket": "flutter-library-management-jas.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:89249602339:android:9bd08daafe16e2bf524a96",
+        "android_client_info": {
+          "package_name": "jas.want.library_management"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCD3pxLR86mDbB9VSEg-RT_KBbmwrF4M9c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -28,12 +28,17 @@ dependencies:
   screenshot: ^2.1.0
   mobile_scanner: ^3.4.1
   native_qr: ^0.0.3
+  firebase_core: ^2.16.0
+  firebase_auth: ^4.10.0
+  cloud_firestore: ^4.9.2
 
   
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner:
+  flutter_gen_runner:
 
   
   
