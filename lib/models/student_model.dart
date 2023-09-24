@@ -1,3 +1,4 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 // To parse this JSON data, do
 //
 //     final studentModel = studentModelFromJson(jsonString);
@@ -84,4 +85,22 @@ class Student {
         "last_payment_date": lastPaymentDate.toIso8601String(),
         "id": id,
       };
+
+  Student copyWith({
+    String? name,
+    int? phone,
+    DateTime? admissionDate,
+    List<Slots>? slots,
+    DateTime? lastPaymentDate,
+    String? id,
+  }) {
+    return Student(
+      name: name ?? this.name,
+      phone: phone ?? this.phone,
+      admissionDate: admissionDate ?? this.admissionDate,
+      slots: slots ?? this.slots,
+      lastPaymentDate: lastPaymentDate ?? this.lastPaymentDate,
+      id: id ?? this.id,
+    );
+  }
 }
