@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:library_management/models/custom_error.dart';
@@ -21,6 +23,7 @@ class StudentListBloc extends Bloc<StudentListEvent, StudentListState> {
           students: students,
         ));
       } catch (e) {
+        log('caught error on loading');
         emit(state.copyWith(
           error: CustomError(message: e.toString()),
           status: StudentListLoadingStatus.error,
@@ -29,24 +32,27 @@ class StudentListBloc extends Bloc<StudentListEvent, StudentListState> {
     });
     on<AddStudentEvent>(
       (event, emit) async {
+        log('here123');
         emit(
           state.copyWith(
-            status: StudentListLoadingStatus.loadedList,
+            addStatus: StudentAddingStatus.addding,
           ),
         );
+        log('waiting for 3 seconds');
+        await Future.delayed(const Duration(seconds: 3));
         try {
           await _studentRepository.addStudent(event.student);
         } catch (e) {
           emit(state.copyWith(
             error: CustomError(message: e.toString()),
-            status: StudentListLoadingStatus.error,
+            addStatus: StudentAddingStatus.error,
           ));
         }
         List<Student> students = state.students;
         students.add(event.student);
         emit(state.copyWith(
           students: students,
-          status: StudentListLoadingStatus.loadedList,
+          addStatus: StudentAddingStatus.added,
         ));
       },
     );
@@ -59,11 +65,17 @@ class StudentListBloc extends Bloc<StudentListEvent, StudentListState> {
           students: students,
         ));
       } catch (e) {
+        log('caught error on refreshing');
         emit(state.copyWith(
           error: CustomError(message: e.toString()),
           status: StudentListLoadingStatus.error,
         ));
       }
     });
+    on<AddStudentEventInitial>(
+      (event, emit) {
+        emit(state.copyWith(addStatus: StudentAddingStatus.initial));
+      },
+    );
   }
 }

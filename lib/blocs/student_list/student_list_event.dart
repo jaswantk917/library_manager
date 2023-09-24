@@ -25,6 +25,7 @@ class AddStudentEvent extends StudentListEvent {
   String toString() => 'AddStudentEvent(student: $student)';
 }
 
+class AddStudentEventInitial extends StudentListEvent {}
 // class GetStudentByIdEvent extends StudentListEvent {
 //   final String id;
 //   const GetStudentByIdEvent({

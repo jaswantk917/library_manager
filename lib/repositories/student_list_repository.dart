@@ -1,4 +1,6 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'dart:developer';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
 import 'package:library_management/constants/db_constants.dart';
@@ -17,15 +19,27 @@ class StudentRepository {
   })  : _firebaseAuth = firebaseAuth,
         _firebaseFirestore = firebaseFirestore;
   Future<List<Student>> fetchStudentList() async {
-    QuerySnapshot<Map<String, dynamic>> snapshot = await studentListRef.get();
-    return snapshot.docs
-        .map((docSnapshot) => Student.fromJson(docSnapshot.data()))
-        .toList();
+    try {
+      QuerySnapshot<Map<String, dynamic>> snapshot = await studentListRef.get();
+      return snapshot.docs
+          .map((docSnapshot) => Student.fromJson(docSnapshot.data()))
+          .toList();
+    } on fb_auth.FirebaseAuthException catch (e) {
+      log('firebase error');
+      throw CustomError(code: e.code, message: e.message!, plugin: e.plugin);
+    } catch (e) {
+      log('here error');
+      throw const CustomError(
+        code: 'Exception',
+        message: 'flutter error/server error',
+        plugin: '',
+      );
+    }
   }
 
   Future<void> addStudent(Student student) async {
     try {
-      studentListRef.doc(student.phone.toString()).set(student.toJson());
+      studentListRef.doc(student.id).set(student.toJson());
     } on fb_auth.FirebaseAuthException catch (e) {
       throw CustomError(code: e.code, message: e.message!, plugin: e.plugin);
     } catch (e) {
