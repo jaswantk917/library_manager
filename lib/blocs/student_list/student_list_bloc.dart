@@ -12,7 +12,7 @@ class StudentListBloc extends Bloc<StudentListEvent, StudentListState> {
   StudentListBloc({required StudentRepository studentRepository})
       : _studentRepository = studentRepository,
         super(StudentListState.initial()) {
-    on<LoadStudentEvent>((event, emit) async {
+    on<LoadListFirstTimeEvent>((event, emit) async {
       emit(state.copyWith(status: StudentListLoadingStatus.loadingList));
       try {
         List<Student> students = await _studentRepository.fetchStudentList();
@@ -31,7 +31,7 @@ class StudentListBloc extends Bloc<StudentListEvent, StudentListState> {
       (event, emit) async {
         emit(
           state.copyWith(
-            status: StudentListLoadingStatus.addingStduent,
+            status: StudentListLoadingStatus.loadedList,
           ),
         );
         try {
@@ -46,9 +46,24 @@ class StudentListBloc extends Bloc<StudentListEvent, StudentListState> {
         students.add(event.student);
         emit(state.copyWith(
           students: students,
-          status: StudentListLoadingStatus.addedStudent,
+          status: StudentListLoadingStatus.loadedList,
         ));
       },
     );
+    on<RefreshListEvent>((event, emit) async {
+      emit(state.copyWith(status: StudentListLoadingStatus.refreshing));
+      try {
+        List<Student> students = await _studentRepository.fetchStudentList();
+        emit(state.copyWith(
+          status: StudentListLoadingStatus.loadedList,
+          students: students,
+        ));
+      } catch (e) {
+        emit(state.copyWith(
+          error: CustomError(message: e.toString()),
+          status: StudentListLoadingStatus.error,
+        ));
+      }
+    });
   }
 }

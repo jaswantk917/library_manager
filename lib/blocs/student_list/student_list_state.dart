@@ -7,8 +7,7 @@ enum StudentListLoadingStatus {
   loadingList,
   error,
   loadedList,
-  addingStduent,
-  addedStudent,
+  refreshing,
 }
 
 class StudentListState extends Equatable {

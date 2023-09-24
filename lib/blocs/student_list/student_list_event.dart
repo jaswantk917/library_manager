@@ -8,7 +8,9 @@ sealed class StudentListEvent extends Equatable {
   List<Object> get props => [];
 }
 
-class LoadStudentEvent extends StudentListEvent {}
+class LoadListFirstTimeEvent extends StudentListEvent {}
+
+class RefreshListEvent extends StudentListEvent {}
 
 class AddStudentEvent extends StudentListEvent {
   final Student student;

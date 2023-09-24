@@ -1,89 +1,83 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:library_management/common_widgets.dart';
-import 'package:library_management/models/student_model.dart';
-import 'package:library_management/repositories/student_list_repository.dart';
+import 'package:library_management/blocs/student_list/student_list_bloc.dart';
 import 'package:library_management/screens/student_profile.dart';
+import 'package:library_management/utils/error_dialog.dart';
 
 class StudentList extends StatefulWidget {
-  const StudentList({Key? key}) : super(key: key);
+  const StudentList({super.key});
 
   @override
   State<StudentList> createState() => _StudentListState();
 }
 
 class _StudentListState extends State<StudentList> {
-  List<Student> studentsList = [];
-  late Future<List<Student>> future;
-
   @override
   void initState() {
-    future = StudentRepository(
-            firebaseAuth: FirebaseAuth.instance,
-            firebaseFirestore: FirebaseFirestore.instance)
-        .fetchStudentList();
     super.initState();
+    context.read<StudentListBloc>().add(LoadListFirstTimeEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder(
-      builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
-          return const Center(child: CircularProgressIndicator.adaptive());
-        } else if (snapshot.hasError) {
-          return const Center(
-            child: Text('Something went wrong! Restart the app.'),
-          );
-        } else {
-          studentsList = snapshot.data!;
-
-          return RefreshIndicator.adaptive(
-            onRefresh: () async {
-              setState(() {
-                future = StudentRepository(
-                        firebaseAuth: FirebaseAuth.instance,
-                        firebaseFirestore: FirebaseFirestore.instance)
-                    .fetchStudentList();
-              });
-            },
-            child: studentsList.isEmpty
-                ? const Center(child: EmptyListWidget())
-                : ListView.builder(
-                    physics: const AlwaysScrollableScrollPhysics(),
-                    itemCount: studentsList.length,
-                    itemBuilder: (BuildContext context, int index) {
-                      final student = studentsList[index];
-
-                      return Card(
-                        child: ListTile(
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(12))),
-                          leading: const Icon(Icons.person),
-                          title: Text(student.name),
-                          subtitle: Text(
-                              'Last paid on ${DateFormat.yMMMd().format(student.admissionDate)}'),
-                          onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) =>
-                                    StudentProfile(id: student.id),
-                              ),
-                            );
-                          },
-                          trailing: const Icon(Icons.arrow_forward_sharp),
-                        ),
-                      );
-                    },
-                  ),
-          );
+    return BlocListener<StudentListBloc, StudentListState>(
+      listener: (context, state) {
+        if (state.status == StudentListLoadingStatus.error) {
+          errorDialog(context, state.error);
         }
       },
-      future: future,
+      child: const StudentListView(),
     );
+  }
+}
+
+class StudentListView extends StatelessWidget {
+  const StudentListView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    switch (context.watch<StudentListBloc>().state.status) {
+      case StudentListLoadingStatus.loadingList:
+        return const Center(
+          child: CircularProgressIndicator.adaptive(),
+        );
+
+      default:
+        return RefreshIndicator.adaptive(
+          onRefresh: () async {
+            context.read<StudentListBloc>().add(RefreshListEvent());
+            await Future.delayed(const Duration(seconds: 2));
+          },
+          child: ListView.builder(
+            physics: const AlwaysScrollableScrollPhysics(),
+            itemCount: context.watch<StudentListBloc>().state.students.length,
+            itemBuilder: (BuildContext context, int index) {
+              final student =
+                  context.watch<StudentListBloc>().state.students[index];
+
+              return Card(
+                child: ListTile(
+                  shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(12))),
+                  leading: const Icon(Icons.person),
+                  title: Text(student.name),
+                  subtitle: Text(
+                      'Last paid on ${DateFormat.yMMMd().format(student.admissionDate)}'),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StudentProfile(id: student.id),
+                      ),
+                    );
+                  },
+                  trailing: const Icon(Icons.arrow_forward_sharp),
+                ),
+              );
+            },
+          ),
+        );
+    }
   }
 }
