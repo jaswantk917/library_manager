@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:library_management/common_widgets.dart';
 import 'package:library_management/models/student_model.dart';
-import 'package:library_management/repositories/student_list.dart';
+import 'package:library_management/repositories/student_list_repository.dart';
 import 'package:library_management/screens/student_profile.dart';
 
 class StudentList extends StatefulWidget {
@@ -18,7 +20,10 @@ class _StudentListState extends State<StudentList> {
 
   @override
   void initState() {
-    future = StudentRepository().fetchStudentList();
+    future = StudentRepository(
+            firebaseAuth: FirebaseAuth.instance,
+            firebaseFirestore: FirebaseFirestore.instance)
+        .fetchStudentList();
     super.initState();
   }
 
@@ -38,7 +43,10 @@ class _StudentListState extends State<StudentList> {
           return RefreshIndicator.adaptive(
             onRefresh: () async {
               setState(() {
-                future = StudentRepository().fetchStudentList();
+                future = StudentRepository(
+                        firebaseAuth: FirebaseAuth.instance,
+                        firebaseFirestore: FirebaseFirestore.instance)
+                    .fetchStudentList();
               });
             },
             child: studentsList.isEmpty

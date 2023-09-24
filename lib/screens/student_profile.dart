@@ -1,9 +1,12 @@
 import 'dart:async';
+import 'dart:developer';
 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:library_management/models/student_model.dart';
-import 'package:library_management/repositories/student_list.dart';
+import 'package:library_management/repositories/student_list_repository.dart';
 import 'package:library_management/screens/edit_profile.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -18,7 +21,9 @@ class StudentProfile extends StatefulWidget {
 }
 
 class _StudentProfileState extends State<StudentProfile> {
-  StudentRepository rep = StudentRepository();
+  StudentRepository rep = StudentRepository(
+      firebaseAuth: FirebaseAuth.instance,
+      firebaseFirestore: FirebaseFirestore.instance);
   late Future<Student> future;
   bool loading = false;
   String? name;
@@ -42,7 +47,7 @@ class _StudentProfileState extends State<StudentProfile> {
                 value: 'SampleItem.itemOne',
                 child: const Text('Edit'),
                 onTap: () {
-                  print('Tapped');
+                  log('Tapped');
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) {

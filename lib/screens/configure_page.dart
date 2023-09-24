@@ -1,6 +1,8 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:input_quantity/input_quantity.dart';
-import 'package:library_management/repositories/student_list.dart';
+import 'package:library_management/repositories/student_list_repository.dart';
 
 class ConfigurePage extends StatefulWidget {
   const ConfigurePage({super.key});
@@ -11,7 +13,9 @@ class ConfigurePage extends StatefulWidget {
 
 class _ConfigurePageState extends State<ConfigurePage> {
   late Future<List<int>> future;
-  StudentRepository repository = StudentRepository();
+  StudentRepository repository = StudentRepository(
+      firebaseAuth: FirebaseAuth.instance,
+      firebaseFirestore: FirebaseFirestore.instance);
 
   @override
   void initState() {

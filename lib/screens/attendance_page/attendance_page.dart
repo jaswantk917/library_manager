@@ -1,8 +1,10 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/attendance_today.dart';
-import 'package:library_management/repositories/student_list.dart';
+import 'package:library_management/repositories/student_list_repository.dart';
 import 'package:library_management/utils/common_functions.dart';
 
 class AttendanceList extends StatefulWidget {
@@ -13,7 +15,9 @@ class AttendanceList extends StatefulWidget {
 }
 
 class _AttendanceListState extends State<AttendanceList> {
-  final StudentRepository rep = StudentRepository();
+  final StudentRepository rep = StudentRepository(
+      firebaseAuth: FirebaseAuth.instance,
+      firebaseFirestore: FirebaseFirestore.instance);
   late Future<List<Student>> future;
 
   Future<List<Student>> fetchStudentListFiltered() async {
@@ -48,7 +52,10 @@ class _AttendanceListState extends State<AttendanceList> {
           return RefreshIndicator.adaptive(
             onRefresh: () async {
               setState(() {
-                future = StudentRepository().fetchStudentList();
+                future = StudentRepository(
+                        firebaseAuth: FirebaseAuth.instance,
+                        firebaseFirestore: FirebaseFirestore.instance)
+                    .fetchStudentList();
               });
             },
             child: ListView.builder(

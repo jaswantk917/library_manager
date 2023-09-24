@@ -32,7 +32,7 @@ class LandingPage extends StatelessWidget {
             },
           );
         } else if (state.authStatus == AuthStatus.authenticated) {
-          Navigator.pushReplacement(
+          Navigator.push(
             context,
             MaterialPageRoute(
               builder: (context) => const MyHomePage(title: 'Library by Jas'),

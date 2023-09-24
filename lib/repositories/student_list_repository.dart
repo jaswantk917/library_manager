@@ -1,31 +1,56 @@
-import 'package:library_management/models/student_model.dart';
+// ignore_for_file: public_member_api_docs, sort_constructors_first
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:library_management/constants/db_constants.dart';
+import 'package:library_management/models/custom_error.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class StudentRepository {
-  Future<List<Student>> fetchStudentList() async {
-    final prefs = await SharedPreferences.getInstance();
-    print(prefs.getString('student') ?? '[]');
-    List<Student> studentList =
-        studentListFromJson(prefs.getString('student') ?? '[]');
+import 'package:library_management/models/student_model.dart';
 
-    return studentList;
+class StudentRepository {
+  final FirebaseFirestore _firebaseFirestore;
+  final fb_auth.FirebaseAuth _firebaseAuth;
+
+  StudentRepository({
+    required FirebaseFirestore firebaseFirestore,
+    required fb_auth.FirebaseAuth firebaseAuth,
+  })  : _firebaseAuth = firebaseAuth,
+        _firebaseFirestore = firebaseFirestore;
+  Future<List<Student>> fetchStudentList() async {
+    QuerySnapshot<Map<String, dynamic>> snapshot = await studentListRef.get();
+    return snapshot.docs
+        .map((docSnapshot) => Student.fromJson(docSnapshot.data()))
+        .toList();
   }
 
   Future<void> addStudent(Student student) async {
-    final prefs = await SharedPreferences.getInstance();
-
-    List<Student> studentList =
-        studentListFromJson(prefs.getString('student') ?? '[]');
-    studentList.add(student);
-
-    prefs.setString('student', studentListToJson(studentList));
+    try {
+      studentListRef.doc(student.phone.toString()).set(student.toJson());
+    } on fb_auth.FirebaseAuthException catch (e) {
+      throw CustomError(code: e.code, message: e.message!, plugin: e.plugin);
+    } catch (e) {
+      throw const CustomError(
+        code: 'Exception',
+        message: 'flutter error/server error',
+        plugin: '',
+      );
+    }
   }
 
   Future<Student> fetchStudentById(String id) async {
     final prefs = await SharedPreferences.getInstance();
 
-    Student student = studentListFromJson(prefs.getString('student') ?? '[]')
-        .firstWhere((element) => element.id == id);
+    Student student =
+        studentListFromJson(prefs.getString('student') ?? '[]').firstWhere(
+      (element) => element.id == id,
+      orElse: () => Student(
+          name: '',
+          phone: 0,
+          admissionDate: DateTime(1),
+          slots: [],
+          lastPaymentDate: DateTime(1),
+          id: id),
+    );
 
     return student;
   }
@@ -69,13 +94,4 @@ class StudentRepository {
 
     prefs.setString('student', studentListToJson(studentList));
   }
-  // Future<void> addStudent(StudentModel student) async {
-  //   final prefs = await SharedPreferences.getInstance();
-  //   //List<Student>? students = await loadStudents();
-  //   students.add(student);
-  //   await prefs.setString('student', encode(students));
-  //   students = decode(prefs.getString('student') ?? '[]');
-
-  //   notifyListeners();
-  // }
 }

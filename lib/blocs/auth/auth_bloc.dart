@@ -20,7 +20,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
     on<AuthStateChangedEvent>((event, emit) {
       if (event.user != null) {
-        log('emmiting authenticated');
         emit(
           state.copyWith(
             authStatus: AuthStatus.authenticated,
@@ -28,7 +27,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           ),
         );
       } else {
-        log('emmiting unauthenticated');
         emit(
           state.copyWith(
             authStatus: AuthStatus.unauthenticated,
