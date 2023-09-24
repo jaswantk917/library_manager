@@ -40,6 +40,8 @@ class LandingPage extends StatelessWidget {
           );
         }
       },
+
+      //TODO: landing page make animation
       child: const Scaffold(),
     );
   }

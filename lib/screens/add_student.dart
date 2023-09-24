@@ -1,18 +1,16 @@
 import 'dart:developer';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:library_management/blocs/student_list/student_list_bloc.dart';
-import 'package:library_management/models/attendance_model.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/student_list_repository.dart';
 import 'package:library_management/screens/qr_show_page.dart';
 import 'package:library_management/utils/common_functions.dart';
 import 'package:uuid/uuid.dart';
 
+//TODO: maybe refactor
 class FormPage extends StatelessWidget {
   const FormPage({Key? key}) : super(key: key);
 
@@ -270,7 +268,25 @@ class _AddStudentFormState extends State<AddStudentForm> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: const Text('Add a new student'),
         ),
-        floatingActionButton: FloatingActionButton(
+        floatingActionButton: FloatingActionButton.extended(
+          label: Row(
+            children: [
+              context.watch<StudentListBloc>().state.addStatus ==
+                      StudentAddingStatus.addding
+                  ? const SizedBox(
+                      height: 30,
+                      width: 30,
+                      child: CircularProgressIndicator.adaptive())
+                  : const Icon(Icons.check),
+              const SizedBox(
+                width: 8,
+              ),
+              Text(context.watch<StudentListBloc>().state.addStatus ==
+                      StudentAddingStatus.addding
+                  ? 'Adding'
+                  : 'Add'),
+            ],
+          ),
           onPressed: (noon || evening || night || morning) &&
                   context.watch<StudentListBloc>().state.addStatus ==
                       StudentAddingStatus.initial
@@ -301,10 +317,6 @@ class _AddStudentFormState extends State<AddStudentForm> {
           backgroundColor: (noon || evening || night || morning)
               ? Theme.of(context).colorScheme.primaryContainer
               : Theme.of(context).colorScheme.secondary,
-          child: context.watch<StudentListBloc>().state.addStatus ==
-                  StudentAddingStatus.addding
-              ? const CircularProgressIndicator.adaptive()
-              : const Icon(Icons.check),
         ),
       ),
     );

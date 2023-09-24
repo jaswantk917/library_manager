@@ -2,9 +2,8 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:library_management/blocs/student_list/student_list_bloc.dart';
-import 'package:library_management/screens/student_profile.dart';
+import 'package:library_management/screens/students_list/student_detail_widget.dart';
 import 'package:library_management/utils/error_dialog.dart';
 
 class StudentList extends StatefulWidget {
@@ -15,6 +14,7 @@ class StudentList extends StatefulWidget {
 }
 
 class _StudentListState extends State<StudentList> {
+  int homePageBuilt = 0;
   @override
   void initState() {
     super.initState();
@@ -23,6 +23,8 @@ class _StudentListState extends State<StudentList> {
 
   @override
   Widget build(BuildContext context) {
+    homePageBuilt++;
+    log('Homepage was built this many times $homePageBuilt');
     return BlocListener<StudentListBloc, StudentListState>(
       listener: (context, state) {
         if (state.status == StudentListLoadingStatus.error) {
@@ -58,25 +60,7 @@ class StudentListView extends StatelessWidget {
               final student =
                   context.watch<StudentListBloc>().state.students[index];
 
-              return Card(
-                child: ListTile(
-                  shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(12))),
-                  leading: const Icon(Icons.person),
-                  title: Text(student.name),
-                  subtitle: Text(
-                      'Last paid on ${DateFormat.yMMMd().format(student.admissionDate)}'),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => StudentProfile(id: student.id),
-                      ),
-                    );
-                  },
-                  trailing: const Icon(Icons.arrow_forward_sharp),
-                ),
-              );
+              return StudentDetailsCard(student: student);
             },
           ),
         );

@@ -47,7 +47,6 @@ class _StudentProfileState extends State<StudentProfile> {
                 value: 'SampleItem.itemOne',
                 child: const Text('Edit'),
                 onTap: () {
-                  log('Tapped');
                   Navigator.of(context).push(
                     MaterialPageRoute(
                       builder: (context) {

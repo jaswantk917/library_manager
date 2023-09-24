@@ -11,7 +11,7 @@ import 'package:library_management/repositories/student_list_repository.dart';
 import 'package:library_management/screens/add_student.dart';
 import 'package:library_management/screens/attendance_page/qr_fab_widget.dart';
 import 'package:library_management/screens/configure_page.dart';
-import 'package:library_management/screens/students_list.dart';
+import 'package:library_management/screens/students_list/students_list.dart';
 import 'package:dynamic_color/dynamic_color.dart';
 import 'package:library_management/screens/waiting_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';

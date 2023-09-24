@@ -23,6 +23,7 @@ class QRFAB extends StatelessWidget {
             }
           }
         } catch (err) {
+          log('error has occured');
           log(err.toString());
         }
 

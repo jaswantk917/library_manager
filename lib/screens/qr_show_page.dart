@@ -12,23 +12,33 @@ class QRShowScreen extends StatelessWidget {
       String data, BuildContext context) async {
     final qrCode = Material(
       color: Theme.of(context).colorScheme.background,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          const SizedBox(
-            height: 16,
-          ),
-          QrImageView(
-            data: data,
-            version: QrVersions.auto,
-            size: 200.0,
-            backgroundColor: Colors.white,
-          ),
-        ],
+      child: Padding(
+        padding: const EdgeInsets.all(32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              title,
+              style: Theme.of(context).textTheme.headlineMedium,
+            ),
+            const SizedBox(
+              height: 16,
+            ),
+            QrImageView(
+              data: data,
+              version: QrVersions.auto,
+              size: 200.0,
+              backgroundColor: Colors.white,
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            Text(
+              'App by Jaswant Kumar',
+              style: Theme.of(context).textTheme.titleSmall,
+            ),
+          ],
+        ),
       ),
     );
 
