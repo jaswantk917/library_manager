@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
@@ -84,9 +85,19 @@ class _AddStudentFormState extends State<AddStudentForm> {
           }
 
           if (context.mounted) {
-            Navigator.of(context).push(MaterialPageRoute(
-                builder: (context) =>
-                    QRShowScreen(title: studentName, data: id)));
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (context) => QRShowScreen(
+                  title: studentName,
+                  data: jsonEncode(
+                    <String, dynamic>{
+                      "type": "library attendance by Jaswant",
+                      "id": id,
+                    },
+                  ),
+                ),
+              ),
+            );
           }
         }
       },

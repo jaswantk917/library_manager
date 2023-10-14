@@ -1,7 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:library_management/models/student_model.dart';
 import 'package:library_management/repositories/attendance_today.dart';
 import 'package:library_management/repositories/student_list_repository.dart';
@@ -52,10 +51,7 @@ class _AttendanceListState extends State<AttendanceList> {
           return RefreshIndicator.adaptive(
             onRefresh: () async {
               setState(() {
-                future = StudentRepository(
-                        firebaseAuth: FirebaseAuth.instance,
-                        firebaseFirestore: FirebaseFirestore.instance)
-                    .fetchStudentList();
+                future = fetchStudentListFiltered();
               });
             },
             child: ListView.builder(
@@ -72,12 +68,12 @@ class _AttendanceListState extends State<AttendanceList> {
                                 BorderRadius.all(Radius.circular(12))),
                         secondary: const Icon(Icons.person),
                         title: Text(students[index].name),
-                        subtitle: snapshot.data != null
+                        subtitle: snapshot.data ?? false
                             ? const Text(
                                 'Attendance marked at {DateFormat().format(snapshot.data!)}')
                             : const Text('Has not arrived yet.'),
                         onChanged: (value) {},
-                        value: snapshot.data != null,
+                        value: snapshot.data ?? false,
                       ),
                     );
                   },

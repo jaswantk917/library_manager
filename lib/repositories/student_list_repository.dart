@@ -29,7 +29,7 @@ class StudentRepository {
       log('firebase error');
       throw CustomError(code: e.code, message: e.message!, plugin: e.plugin);
     } catch (e) {
-      log('here error');
+      log('here error 3');
       throw CustomError(
         code: 'Exception',
         message: 'Somethig went wrong.',

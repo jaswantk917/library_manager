@@ -18,7 +18,7 @@ class Attendance {
         date: DateTime.parse(json["date"]),
         ids: json["ids"] == null
             ? <String>[]
-            : List<String>.from(json["attendance"]!.map((x) => x)),
+            : List<String>.from(json["ids"]!.map((x) => x)),
       );
 
   Map<String, dynamic> toJson() => {

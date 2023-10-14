@@ -18,18 +18,21 @@ class AttendanceRepository {
           await attendancesListRef.doc(formatDate(DateTime.now())).get();
 
       if (snapshot.data() == null) {
+        log('was null');
         await attendancesListRef
             .doc(formatDate(DateTime.now()))
             .set({'date': formatDate(DateTime.now()), 'attendance': []});
         return Attendance(date: DateTime.now(), ids: []);
       }
+      log(snapshot.data().toString());
 
       return Attendance.fromJson(snapshot.data()!);
     } on fb_auth.FirebaseAuthException catch (e) {
       log('firebase error');
       throw CustomError(code: e.code, message: e.message!, plugin: e.plugin);
     } catch (e) {
-      log('here error');
+      log('here error 1');
+      log(e.toString());
       throw CustomError(
         code: 'Exception',
         message: 'Somethig went wrong.',
@@ -47,7 +50,7 @@ class AttendanceRepository {
       log('firebase error');
       throw CustomError(code: e.code, message: e.message!, plugin: e.plugin);
     } catch (e) {
-      log('here error');
+      log('here error 2');
       throw CustomError(
         code: 'Exception',
         message: 'Somethig went wrong.',

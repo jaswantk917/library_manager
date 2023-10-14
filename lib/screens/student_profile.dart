@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -85,7 +87,12 @@ class StudentProfile extends StatelessWidget {
                 child: CircleAvatar(
                   radius: 100,
                   child: QrImageView(
-                    data: id,
+                    data: jsonEncode(
+                      <String, dynamic>{
+                        "type": "library attendance by Jaswant",
+                        "id": id,
+                      },
+                    ),
                     version: QrVersions.auto,
                     size: 150,
                   ),
