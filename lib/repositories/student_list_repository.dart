@@ -21,6 +21,7 @@ class StudentRepository {
   Future<List<Student>> fetchStudentList() async {
     try {
       QuerySnapshot<Map<String, dynamic>> snapshot = await studentListRef.get();
+
       return snapshot.docs
           .map((docSnapshot) => Student.fromJson(docSnapshot.data()))
           .toList();
@@ -29,10 +30,10 @@ class StudentRepository {
       throw CustomError(code: e.code, message: e.message!, plugin: e.plugin);
     } catch (e) {
       log('here error');
-      throw const CustomError(
+      throw CustomError(
         code: 'Exception',
-        message: 'flutter error/server error',
-        plugin: '',
+        message: 'Somethig went wrong.',
+        plugin: e.toString(),
       );
     }
   }

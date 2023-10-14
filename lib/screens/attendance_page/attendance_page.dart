@@ -73,8 +73,8 @@ class _AttendanceListState extends State<AttendanceList> {
                         secondary: const Icon(Icons.person),
                         title: Text(students[index].name),
                         subtitle: snapshot.data != null
-                            ? Text(
-                                'Attendance marked at ${DateFormat('h:mm a').format(snapshot.data!)}')
+                            ? const Text(
+                                'Attendance marked at {DateFormat().format(snapshot.data!)}')
                             : const Text('Has not arrived yet.'),
                         onChanged: (value) {},
                         value: snapshot.data != null,

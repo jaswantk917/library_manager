@@ -23,7 +23,6 @@ dependencies:
   input_quantity: ^1.1.6
   intl: ^0.18.1
   mobile_scanner: ^3.4.1
-  native_qr: ^0.0.3
   qr_flutter: ^4.1.0
   screenshot: ^2.1.0
   share_plus: ^7.1.0

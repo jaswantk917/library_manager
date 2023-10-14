@@ -1,38 +1,69 @@
+import 'package:intl/intl.dart';
 import 'package:library_management/models/attendance_model.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'dart:developer';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart' as fb_auth;
+import 'package:library_management/constants/db_constants.dart';
+import 'package:library_management/models/custom_error.dart';
+
+String formatDate(DateTime date) {
+  return DateFormat('yyyyMMdd').format(date);
+}
 
 class AttendanceRepository {
   Future<Attendance> fetchAttendance() async {
-    final sharedPref = await SharedPreferences.getInstance();
-    String? temp = sharedPref.getString('attendance');
-    if (temp != null) {
-      Attendance tempAttendanceList = Attendance.fromRawJson(temp);
-      if (tempAttendanceList.date.day == DateTime.now().day &&
-          tempAttendanceList.date.month == DateTime.now().month &&
-          tempAttendanceList.date.year == DateTime.now().year) {
-        return Attendance.fromRawJson(temp);
+    try {
+      DocumentSnapshot<Map<String, dynamic>> snapshot =
+          await attendancesListRef.doc(formatDate(DateTime.now())).get();
+
+      if (snapshot.data() == null) {
+        await attendancesListRef
+            .doc(formatDate(DateTime.now()))
+            .set({'date': formatDate(DateTime.now()), 'attendance': []});
+        return Attendance(date: DateTime.now(), ids: []);
       }
+
+      return Attendance.fromJson(snapshot.data()!);
+    } on fb_auth.FirebaseAuthException catch (e) {
+      log('firebase error');
+      throw CustomError(code: e.code, message: e.message!, plugin: e.plugin);
+    } catch (e) {
+      log('here error');
+      throw CustomError(
+        code: 'Exception',
+        message: 'Somethig went wrong.',
+        plugin: e.toString(),
+      );
     }
-    return Attendance(date: DateTime.now(), attendance: []);
   }
 
   Future<void> saveAttendance(Attendance attendanceList) async {
-    final sharedPref = await SharedPreferences.getInstance();
-    sharedPref.setString('attendance', attendanceList.toRawJson());
+    try {
+      await attendancesListRef
+          .doc(formatDate(DateTime.now()))
+          .set(attendanceList.toJson());
+    } on fb_auth.FirebaseAuthException catch (e) {
+      log('firebase error');
+      throw CustomError(code: e.code, message: e.message!, plugin: e.plugin);
+    } catch (e) {
+      log('here error');
+      throw CustomError(
+        code: 'Exception',
+        message: 'Somethig went wrong.',
+        plugin: e.toString(),
+      );
+    }
   }
 
   Future<void> markAttendance(String id) async {
     Attendance attendanceList = await fetchAttendance();
-    attendanceList.attendance.add(StudentList(id: id, time: DateTime.now()));
+    attendanceList.ids.add(id);
     await saveAttendance(attendanceList);
   }
 
-  Future<DateTime?> hasMarkedAttendance(String id) async {
+  Future<bool> hasMarkedAttendance(String id) async {
     Attendance attendanceList = await fetchAttendance();
-    DateTime? ans;
-    for (var element in attendanceList.attendance) {
-      if (element.id == id) ans = element.time;
-    }
-    return ans;
+    return attendanceList.ids.contains(id);
   }
 }
