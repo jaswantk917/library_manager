@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:library_management/blocs/auth/auth_bloc.dart';
 import 'package:library_management/blocs/signin/signin_cubit.dart';
 import 'package:library_management/blocs/student_list/student_list_bloc.dart';
@@ -20,7 +21,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsFlutterBinding =
+      WidgetsFlutterBinding.ensureInitialized();
+
+  //FlutterNativeSplash.preserve(widgetsBinding: widgetsFlutterBinding);
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
@@ -36,7 +41,6 @@ class MyApp extends StatelessWidget {
   static final _defaultDarkColorScheme = ColorScheme.fromSwatch(
       primarySwatch: Colors.blue, brightness: Brightness.dark);
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return DynamicColorBuilder(
@@ -107,6 +111,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int currentPageIndex = 0;
 
+  @override
+  void initState() {
+    FlutterNativeSplash.remove();
+    super.initState();
+  }
+
   Widget mainPage() {
     if (currentPageIndex == 0) {
       return const StudentList();
@@ -135,16 +145,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 itemBuilder: (BuildContext context) => <PopupMenuEntry<String>>[
                   PopupMenuItem<String>(
                     value: 'SampleItem.itemOne',
-                    child: const Text('Delete data'),
+                    child: const Text('Log out'),
                     onTap: () async {
                       context.read<AuthBloc>().add(SignoutRequestedEvent());
                       final prefs = await SharedPreferences.getInstance();
                       prefs.clear();
                     },
-                  ),
-                  const PopupMenuItem<String>(
-                    value: 'SampleItem.itemTw',
-                    child: Text('Backup'),
                   ),
                 ],
               ),
