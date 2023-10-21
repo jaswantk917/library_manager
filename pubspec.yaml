@@ -32,6 +32,7 @@ dependencies:
   uuid: ^3.0.7
   validators: ^3.0.0
   flutter_native_splash: ^2.3.3
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   build_runner:
